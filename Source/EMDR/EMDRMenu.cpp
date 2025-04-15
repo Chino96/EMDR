@@ -17,6 +17,8 @@ void AEMDRMenu::BeginPlay()
 {
 	Super::BeginPlay();
 	StartButtons = this->GetComponentsByTag(UChildActorComponent::StaticClass(), FName("Start"));
+	//Get the location solver component by the class type
+	LocationSolver = Cast<ULocationSolver>(GetComponentByClass(ULocationSolver::StaticClass()));
 }
 
 // Called every frame

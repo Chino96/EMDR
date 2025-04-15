@@ -33,6 +33,13 @@ void AMRPawn::BeginPlay()
 void AMRPawn::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+    //Get the Location Solver component from the EMDR menu
+    ULocationSolver* LocationSolver = Cast<ULocationSolver>(EMDRMenu->GetComponentByClass(ULocationSolver::StaticClass()));
+    LocationSolver->SetActorLocation(CameraComponent->GetComponentLocation() + CameraComponent->GetForwardVector() * 60);
+    LocationSolver->SetActorRotation(CameraComponent->GetComponentRotation());
+
+
     if (UEyeTrackerFunctionLibrary::GetGazeData(GazeData))
     {
         if(BeginEyeTracking){
@@ -40,7 +47,6 @@ void AMRPawn::Tick(float DeltaTime)
             GazeOrb->SetActorLocation(FVector(GazeOrb->GetActorLocation().X, GazeLocation.Y, GazeLocation.Z));
             GazeOrb->SetActorRotation(CameraComponent->GetComponentRotation());
         }
-        EMDRMenu->SetActorLocation(FVector(CameraComponent->GetComponentLocation().X + 75, CameraComponent->GetComponentLocation().Y, CameraComponent->GetComponentLocation().Z));
     }
     if(EMDRMenu->SessionStarted)
     {

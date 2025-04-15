@@ -67,9 +67,9 @@ void AGazeOrb::OnOverlapEndDeactivateSphere(UPrimitiveComponent* OverlappedComp,
 	}
 }
 
+
 // Called every frame
 void AGazeOrb::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-

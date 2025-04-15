@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "LocationSolver.h"
 #include "EMDRMenu.generated.h"
 
 UCLASS()
@@ -56,5 +57,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RadialOrbMovement();
 
+	ULocationSolver* LocationSolver;
 
+public:
+	UFUNCTION(BlueprintCallable)
+	ULocationSolver* GetLocationSolver() const { return LocationSolver; }
 };

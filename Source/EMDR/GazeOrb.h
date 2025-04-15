@@ -6,7 +6,10 @@
 #include <Components/SphereComponent.h>
 #include "GameFramework/Actor.h"
 #include "EMDRMenu.h"
+#include "Components/TimelineComponent.h"
 #include "GazeOrb.generated.h"
+
+class UCurveFloat;
 
 UCLASS()
 class EMDR_API AGazeOrb : public AActor
@@ -33,6 +36,7 @@ protected:
 	UMaterialInstanceDynamic* DynamicMaterial;
 	UStaticMeshComponent* mesh;
 	AEMDRMenu* EMDRMenu;
+
 
 public:	
 	// Called every frame
