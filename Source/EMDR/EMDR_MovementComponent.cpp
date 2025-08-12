@@ -164,39 +164,61 @@ int UEMDR_MovementComponent::FindVectorQuadrant(FVector vector)
 
 void UEMDR_MovementComponent::StartRandomMovement(UCurveFloat* Curve)
 {
+	//Find the eye orb in the world
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEyeOrb::StaticClass(), FoundActors);
 	EyeOrb = Cast<AEyeOrb>(FoundActors[0]);
+	
+	//Get the static mesh component of the eye orb
 	UStaticMeshComponent* sphere = Cast<AActor>(EyeOrb)->FindComponentByClass<UStaticMeshComponent>();
+	
+	//Set up proper collision for raycast detection
+	sphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	sphere->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
+
+
+	//Get the material of the static mesh component
 	UMaterialInterface* matInt = sphere->GetMaterial(0);
 	DynamicMaterial = UMaterialInstanceDynamic::Create(matInt->GetMaterial(), EyeOrb);
 
+	//Clear the found actors array
 	FoundActors.Empty();
+
+	//Find the EMDR menu in the world
     UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("EMDRMenu"), FoundActors);
     AActor* EMDRMenu = FoundActors[0];
 
+	//Hide the EMDR menu
 	EMDRMenu->SetActorHiddenInGame(true);
-
 	AEMDRMenu* EMDRMenuActor = Cast<AEMDRMenu>(EMDRMenu);
 
 	//Create a new TArray of 7 Vectors
 	if(!LocationsGenerated)
 	{
+		//Set the boolean to show that the session has started
 		EMDRMenuActor->SessionStarted = true;
+		//Create an empty TArray of Vectors
 		Locations = TArray<FVector>();
+
+		//Add 8 random locations to the TArray
 		for (int i = 0; i < 8; i++)
 		{
+			//Init the empty Y, and Z coordinates
 			float y;
 			float z;
+			
 			//Generate a Random Boolean
 			bool negative = FMath::RandBool();
+			
 			//create a TArray of 4 random numbers
 			TArray<int> RandomCoordinates;
+			
 			//Generate 2 random numbers between -150 and -75
 			y = FMath::FRandRange(-15, -35);
 			z = FMath::FRandRange(-15, -35);
 			RandomCoordinates.Add(y);
 			RandomCoordinates.Add(z);
+
 			//Generate 2 random numbers between 75 and 150
 			y = FMath::FRandRange(15, 35);
 			z = FMath::FRandRange(15, 35);
@@ -217,11 +239,12 @@ void UEMDR_MovementComponent::StartRandomMovement(UCurveFloat* Curve)
 			}
 			Locations.Add(FVector(EyeOrb->GetActorLocation().X, y, z));
 		}
-		// Create an array to hold the reordered locations
+
+		//Create an array to hold the reordered locations
 		TArray<FVector> ReorderedLocations;
 		ReorderedLocations.Add(Locations[0]);
 
-		// Iterate through the original locations and reorder them
+		//Iterate through the original locations and reorder them
 		for (int i = 1; i < Locations.Num(); i++)
 		{
 			int CurrentQuadrant = FindVectorQuadrant(ReorderedLocations.Last());
@@ -236,9 +259,9 @@ void UEMDR_MovementComponent::StartRandomMovement(UCurveFloat* Curve)
 			}
 		}
 
-		// Replace the original locations with the reordered locations
+		//Replace the original locations with the reordered locations
 		Locations = ReorderedLocations;
-		//using a for loop print all the locations
+		// Using a for loop print all the locations
 		for(int i = 0; i < Locations.Num(); i++)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("##########: Location Quadrant %d: Vector: %s"), FindVectorQuadrant(Locations[i]), *Locations[i].ToString());
@@ -363,6 +386,10 @@ void UEMDR_MovementComponent::TP_Random_Movement(float val)
 {
 	FVector NewLocation = FMath::Lerp(StartLocation, Locations[RandomLocationRequest], val);
 	UStaticMeshComponent* sphere = Cast<AActor>(EyeOrb)->FindComponentByClass<UStaticMeshComponent>();
+	sphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	sphere->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	sphere->SetCollisionResponseToAllChannels(ECR_Block);
+	sphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	FVector color = colors[color_select];
 
 	DynamicMaterial->SetVectorParameterValue(TEXT("Color_0"), color);

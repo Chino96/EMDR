@@ -41,5 +41,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	FEyeTrackerGazeData GazeData;
 
+	UFUNCTION(BlueprintCallable, Category="Raycast")
+	TArray<AActor*> RaycastGridScan(FVector StartLocation, FVector ForwardVector, int32 GridHalfSize, float RayLength, float GridSpacing, FColor RayColor);
+
+	FColor RayColor;
+
 	bool BeginEyeTracking = false;
 };

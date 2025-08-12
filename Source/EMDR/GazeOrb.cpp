@@ -15,10 +15,17 @@ AGazeOrb::AGazeOrb()
 	static ConstructorHelpers::FObjectFinder<UMaterialInstance> MaterialAsset(TEXT("MaterialInstanceConstant'/Game/Materials/Gaze_Sphere_Inst.Gaze_Sphere_Inst'"));
 
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollider"));
-	SphereCollision->SetupAttachment(RootComponent);
+	RootComponent = SphereCollision; // Set as root component
 	SphereCollision->SetSphereRadius(10);
 	SphereCollision->SetVisibility(false);
 	SphereCollision->bHiddenInGame = false;
+	
+	// Set up collision for both overlap and raycast detection
+	SphereCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SphereCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	SphereCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	SphereCollision->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	SphereCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
 	if (MaterialAsset.Succeeded())
 	{
@@ -66,7 +73,6 @@ void AGazeOrb::OnOverlapEndDeactivateSphere(UPrimitiveComponent* OverlappedComp,
 		movementComponent->Glow = false;
 	}
 }
-
 
 // Called every frame
 void AGazeOrb::Tick(float DeltaTime)

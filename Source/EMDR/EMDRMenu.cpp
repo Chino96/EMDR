@@ -94,11 +94,14 @@ void AEMDRMenu::SpawnOrbs(FString type)
 void AEMDRMenu::SpawnOrbsSingular()
 {
 	FVector Center = GetActorLocation();
-	float X = Center.X + 150;
-	float Y = Center.Y;
-	float Z = Center.Z;
-	FVector OrbLocation = FVector(X, Y, Z);
+	FVector ForwardVector = GetActorForwardVector();
+
+	FVector OrbLocation = Center; // Spawn at the same location as the menu
 	AActor* Orb = GetWorld()->SpawnActor<AActor>(AEyeOrb::StaticClass(), OrbLocation, FRotator::ZeroRotator);
+
+	Orb->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+	//Set the orb location to the EMDR menu location
+	Orb->SetActorLocation(OrbLocation);
 }
 
 void AEMDRMenu::RadialOrbMovement()

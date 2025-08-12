@@ -11,9 +11,9 @@ AEyeOrb::AEyeOrb()
 	static ConstructorHelpers::FObjectFinder<UMaterialInstance> MaterialAsset(TEXT("MaterialInstanceConstant'/Game/Materials/Sphere_Inst.Sphere_Inst'"));
 
 	UStaticMeshComponent* meshPtr = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sphere"));
-	meshPtr->SetWorldScale3D(FVector(.045, .045, .045));
-	meshPtr->SetupAttachment(RootComponent);
-	
+	RootComponent = meshPtr; // Set as root component for proper collision
+	meshPtr->SetWorldScale3D(FVector(.25, .25, .25));
+
 	if (SphereAsset.Succeeded() && MaterialAsset.Succeeded())
 	{
 		meshPtr->SetStaticMesh(SphereAsset.Object);
@@ -21,6 +21,13 @@ AEyeOrb::AEyeOrb()
 		meshPtr->SetMaterial(0, MaterialAsset.Object);
 		meshPtr->SetVisibility(true);
 		meshPtr->SetHiddenInGame(false);
+		
+		// Set up collision for raycast detection
+		meshPtr->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		meshPtr->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+		meshPtr->SetCollisionResponseToAllChannels(ECR_Block);
+		//meshPtr->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		meshPtr->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	}
 }
 
